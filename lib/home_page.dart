@@ -24,6 +24,7 @@ class _HomePageState extends State<HomePage> {
   double velocity = 2.50;
   double initalpos = birdY;
   int score = 0;
+  int max = 0;
 
   bool isStarted = false;
   double time = 0;
@@ -76,11 +77,13 @@ class _HomePageState extends State<HomePage> {
   void resetGame() {
     Navigator.pop(context);
     setState(() {
+      max > score ? max : max = score;
       birdY = 0;
       time = 0;
       isStarted = false;
       initalpos = birdY;
       barrierX = [2, 2 + 1.5];
+      score = 0;
     });
   }
 
@@ -198,6 +201,10 @@ class _HomePageState extends State<HomePage> {
               ),
             ),
           ),
+          Container(
+            color: Colors.green,
+            height: 15,
+          ),
           Expanded(
               child: Center(
             child: Container(
@@ -252,7 +259,7 @@ class _HomePageState extends State<HomePage> {
                                   TextStyle(color: Colors.white, fontSize: 28),
                             ),
                             Text(
-                              '10',
+                              max.toString(),
                               style:
                                   TextStyle(color: Colors.white, fontSize: 24),
                             )
