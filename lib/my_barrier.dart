@@ -14,15 +14,17 @@ class MyBarrier extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      alignment: Alignment((2 * barrierX + barrierWidth) / (2 - barrierWidth),
-          isBottomBarrier ? 1 : -1),
+    return AnimatedContainer(
+      alignment: Alignment(barrierX, isBottomBarrier ? 1.2 : -1.2),
+      duration: const Duration(milliseconds: 0),
       child: Container(
-        color: Colors.green,
         width: MediaQuery.of(context).size.width * barrierWidth / 2,
-        height: MediaQuery.of(context).size.height *
-            barrierHeight /
-            2, // Use barrierHeight instead of barrierWidth
+        height: MediaQuery.of(context).size.height * barrierHeight / 2,
+        decoration: BoxDecoration(
+            color: Colors.green,
+            border: Border.all(width: 10, color: Colors.green.shade800),
+            borderRadius: BorderRadius.circular(10)),
+        // Use barrierHeight instead of barrierWidth
       ),
     );
   }

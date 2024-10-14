@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:math';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'my_barrier.dart';
 import 'flappy_bird.dart';
@@ -17,7 +16,7 @@ class _HomePageState extends State<HomePage> {
   //bird
   static double birdY = 0;
   double birdWidth = 0.3;
-  double birdHeight = 0.3;
+  double birdHeight = 0.25;
 
   double gravit = -4.9;
   double height = 0;
@@ -25,16 +24,16 @@ class _HomePageState extends State<HomePage> {
   double initalpos = birdY;
   int score = 0;
   int max = 0;
-
+  double space = 0.3;
   bool isStarted = false;
   double time = 0;
-
+  double Speed = 0.02;
   //Barrier value
   static double barrierWidth = 0.3;
 
   static List<double> barrierX = [
-    2,
-    3.5,
+    1,
+    3,
   ];
   List<List<double>> barrierHeight = [
     [0.6, 0.2],
@@ -42,21 +41,23 @@ class _HomePageState extends State<HomePage> {
   ];
 
   void startGame() {
-    Timer.periodic(Duration(milliseconds: 50), (timer) {
+    Timer.periodic(Duration(milliseconds: 40), (timer) {
       height = gravit * time * time + velocity * time;
       setState(() {
         birdY = initalpos - height;
         isStarted = true;
-        print(birdY);
 
         for (int i = 0; i < barrierX.length; i++) {
-          barrierX[i] -= 0.02; // Move barriers left
+          barrierX[i] -= Speed; // Move barriers left
           // Reset barrier when it goes off the left of the screen
-          if (barrierX[i] < -2) {
+          if (barrierX[i] < -1.5) {
             barrierX[i] += 3.5; // Re-position to the right side of the screen
             barrierHeight[i] = [randomHeight(), randomHeight()];
-            ++score;
-            // Generate new random heights for barriers
+            ++score; // Generate new random heights for barriers
+          }
+          if (score > 5 && Speed <= 0.05) {
+            Speed = Speed + 0.0001;
+            if (space <= 0.37) space = space + 0.01;
           }
         }
 
@@ -70,7 +71,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   double randomHeight() {
-    return (0.4 +
+    return (space +
         0.3 * (new Random().nextDouble())); // Random height between 0.2 and 0.5
   }
 
@@ -82,8 +83,10 @@ class _HomePageState extends State<HomePage> {
       time = 0;
       isStarted = false;
       initalpos = birdY;
-      barrierX = [2, 2 + 1.5];
+      barrierX = [1, 3];
       score = 0;
+      Speed = 0.02;
+      space = 0.3;
     });
   }
 
@@ -155,13 +158,13 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Column(
-        children: <Widget>[
-          Expanded(
-            flex: 3,
-            child: GestureDetector(
-              onTap: isStarted ? jump : startGame,
+    return GestureDetector(
+      onTap: isStarted ? jump : startGame,
+      child: Scaffold(
+        body: Column(
+          children: <Widget>[
+            Expanded(
+              flex: 3,
               child: Container(
                 color: Colors.blue,
                 child: Stack(
@@ -200,76 +203,77 @@ class _HomePageState extends State<HomePage> {
                 ),
               ),
             ),
-          ),
-          Container(
-            color: Colors.green,
-            height: 15,
-          ),
-          Expanded(
-              child: Center(
-            child: Container(
-              color: Colors.brown,
-              child: !isStarted
-                  ? Center(
-                      child: RichText(
-                          text: TextSpan(
-                        children: [
-                          TextSpan(
-                            text: 'Created By:',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 28,
+            Container(
+              color: Colors.green,
+              height: 15,
+            ),
+            Expanded(
+                child: Center(
+              child: Container(
+                color: Colors.brown,
+                child: !isStarted
+                    ? Center(
+                        child: RichText(
+                            text: TextSpan(
+                          children: [
+                            TextSpan(
+                              text: 'Created By:',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 28,
+                              ),
                             ),
+                            TextSpan(
+                              text: '\tTech Hill',
+                              style:
+                                  TextStyle(color: Colors.white, fontSize: 24),
+                            )
+                          ],
+                        )),
+                      )
+                    : Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: <Widget>[
+                          Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                'Score',
+                                style: TextStyle(
+                                    color: Colors.white, fontSize: 28),
+                              ),
+                              Text(
+                                score.toString(),
+                                style: TextStyle(
+                                    color: Colors.white, fontSize: 24),
+                              )
+                            ],
                           ),
-                          TextSpan(
-                            text: '\tTech Hill',
-                            style: TextStyle(color: Colors.white, fontSize: 24),
+                          SizedBox(
+                            width: 25,
+                          ),
+                          Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                'Best',
+                                style: TextStyle(
+                                    color: Colors.white, fontSize: 28),
+                              ),
+                              Text(
+                                max.toString(),
+                                style: TextStyle(
+                                    color: Colors.white, fontSize: 24),
+                              )
+                            ],
                           )
                         ],
-                      )),
-                    )
-                  : Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: <Widget>[
-                        Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              'Score',
-                              style:
-                                  TextStyle(color: Colors.white, fontSize: 28),
-                            ),
-                            Text(
-                              score.toString(),
-                              style:
-                                  TextStyle(color: Colors.white, fontSize: 24),
-                            )
-                          ],
-                        ),
-                        SizedBox(
-                          width: 25,
-                        ),
-                        Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              'Best',
-                              style:
-                                  TextStyle(color: Colors.white, fontSize: 28),
-                            ),
-                            Text(
-                              max.toString(),
-                              style:
-                                  TextStyle(color: Colors.white, fontSize: 24),
-                            )
-                          ],
-                        )
-                      ],
-                    ),
-            ),
-          ))
-        ],
+                      ),
+              ),
+            ))
+          ],
+        ),
       ),
     );
   }
